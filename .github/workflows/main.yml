@@ -44,6 +44,8 @@ jobs:
           restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
       - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
         uses: fiam/arm-none-eabi-gcc@v1.0.2
         with:
@@ -64,6 +66,8 @@ jobs:
           restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
       - name: Install nRF5 SDK
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         if:   steps.cache-nrf5sdk.outputs.cache-hit != 'true'  # Install SDK if not found in cache
         run:  |
           cd ${{ runner.temp }}
@@ -83,15 +87,21 @@ jobs:
           restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
       - name: Install MCUBoot
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
         run:  |
           cd ${{ runner.temp }}
           git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
 
       - name: Install imgtool dependencies
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
 
       - name: Install adafruit-nrfutil
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run:  |
           pip3 install --user wheel
           pip3 install --user setuptools
@@ -126,11 +136,15 @@ jobs:
         # For Faster Builds: Add "make" option "-j"
 
       - name: Make pinetime-mcuboot-app
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run:  |
           cd build
           make pinetime-mcuboot-app
 
       - name: Create firmware image
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run:  |
           # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
           ls -l build/src/pinetime-mcuboot-app*.bin
@@ -138,6 +152,8 @@ jobs:
           ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
 
       - name: Create DFU package
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run:  |
           ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
           unzip -v build/src/pinetime-mcuboot-app-dfu.zip
@@ -145,6 +161,8 @@ jobs:
           unzip build/src/pinetime-mcuboot-app-dfu.zip -d build/src/pinetime-mcuboot-app-dfu
 
       - name: Upload DFU package
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         uses: actions/upload-artifact@v2
         with:
           name: pinetime-mcuboot-app-dfu
@@ -154,11 +172,15 @@ jobs:
         # Make and Upload Standalone Firmware
 
       - name: Make pinetime-app
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run:  |
           cd build
           make pinetime-app
 
       - name: Upload standalone firmware
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         uses: actions/upload-artifact@v2
         with:
           name: pinetime-app.out
@@ -168,6 +190,8 @@ jobs:
       # Finish
 
       - name: Find output
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run:  |
           find . -name "pinetime-app.*" -ls
           find . -name "pinetime-mcuboot-app.*" -ls
