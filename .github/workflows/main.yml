@@ -36,6 +36,7 @@ jobs:
         id:   cache-toolchain
         uses: actions/cache@v2
         env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           cache-name: cache-toolchain-9-2020-q2
         with:
           path: ${{ runner.temp }}/arm-none-eabi
@@ -55,6 +56,7 @@ jobs:
         id:   cache-nrf5sdk
         uses: actions/cache@v2
         env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           cache-name: cache-nrf5sdk
         with:
           path: ${{ runner.temp }}/nrf5_sdk
@@ -73,6 +75,7 @@ jobs:
         id:   cache-mcuboot
         uses: actions/cache@v2
         env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           cache-name: cache-mcuboot
         with:
           path: ${{ runner.temp }}/mcuboot
@@ -107,6 +110,8 @@ jobs:
       # CMake
 
       - name: CMake
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run:  |
           mkdir -p build
           cd build
